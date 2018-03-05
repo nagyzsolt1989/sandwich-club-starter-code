@@ -6,33 +6,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.databinding.DataBindingUtil;
 
 import com.squareup.picasso.Picasso;
-import com.udacity.sandwichclub.databinding.ActivityDetailBinding;
 import com.udacity.sandwichclub.model.Sandwich;
 import com.udacity.sandwichclub.utils.JsonUtils;
 
-import org.json.JSONException;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_POSITION = "extra_position";
     private static final int DEFAULT_POSITION = -1;
 
-    private ActivityDetailBinding mDetailBinding;
+    @BindView(R.id.image_iv) ImageView ingredientsIv;
+    @BindView(R.id.also_known_tv) TextView mAlsoKnown;
+    @BindView(R.id.ingredients_tv) TextView mIngredients;
+    @BindView(R.id.description_tv) TextView mDescription;
+    @BindView(R.id.origin_tv) TextView mOrigin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
-
-        ImageView ingredientsIv = findViewById(R.id.image_iv);
-
-        TextView mAlsoKnown = findViewById(R.id.also_known_tv);
-        TextView mIngredients = findViewById(R.id.ingredients_tv);
-        TextView mDescription = findViewById(R.id.description_tv);
-        TextView mOrigin = findViewById(R.id.origin_tv);
+        setContentView(R.layout.activity_detail);
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -49,6 +46,21 @@ public class DetailActivity extends AppCompatActivity {
         String[] sandwiches = getResources().getStringArray(R.array.sandwich_details);
         String json = sandwiches[position];
         Sandwich sandwich = JsonUtils.parseSandwichJson(json);
+
+        populateUI(sandwich);
+        Picasso.with(this)
+                .load(sandwich.getImage())
+                .into(ingredientsIv);
+
+        setTitle(sandwich.getMainName());
+    }
+
+    private void closeOnError() {
+        finish();
+        Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void populateUI(Sandwich sandwich) {
         if (sandwich == null) {
             // Sandwich data unavailable
             closeOnError();
@@ -79,22 +91,6 @@ public class DetailActivity extends AppCompatActivity {
             mDescription.setText(sandwich.getDescription());
             mOrigin.setText(sandwich.getPlaceOfOrigin());
         }
-
-
-        populateUI();
-        Picasso.with(this)
-                .load(sandwich.getImage())
-                .into(ingredientsIv);
-
-        setTitle(sandwich.getMainName());
-    }
-
-    private void closeOnError() {
-        finish();
-        Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
-    }
-
-    private void populateUI() {
 
     }
 }

@@ -22,21 +22,29 @@ public class JsonUtils {
         String image;
         List<String> ingredients;
 
+        final String KEY_NAME = "name";
+        final String KEY_MAIN_NAME = "mainName";
+        final String KEY_ALSO_KNOW_AS = "alsoKnownAs";
+        final String KEY_PLACE_OF_ORIGIN = "placeOfOrigin";
+        final String KEY_DESCRIPTION = "description";
+        final String KEY_IMAGE = "image";
+        final String KEY_INGREDIENTS = "ingredients";
+
         try {
 
             JSONObject sandwichJson = new JSONObject(json);
 
-            JSONObject nameJson = sandwichJson.getJSONObject("name");
-            mainName = nameJson.getString("mainName");
+            JSONObject nameJson = sandwichJson.getJSONObject(KEY_NAME);
+            mainName = nameJson.getString(KEY_MAIN_NAME);
 
-            JSONArray nameJsonArray = nameJson.getJSONArray("alsoKnownAs");
+            JSONArray nameJsonArray = nameJson.getJSONArray(KEY_ALSO_KNOW_AS);
             alsoKnownAs = convertJsonArrayToList(nameJsonArray);
 
-            placeOfOrigin = sandwichJson.getString("placeOfOrigin");
-            description = sandwichJson.getString("description");
-            image = sandwichJson.getString("image");
+            placeOfOrigin = sandwichJson.optString(KEY_PLACE_OF_ORIGIN);
+            description = sandwichJson.optString(KEY_DESCRIPTION);
+            image = sandwichJson.optString(KEY_IMAGE);
 
-            JSONArray ingredientsJsonArray = sandwichJson.getJSONArray("ingredients");
+            JSONArray ingredientsJsonArray = sandwichJson.getJSONArray(KEY_INGREDIENTS);
             ingredients = convertJsonArrayToList(ingredientsJsonArray);
 
             return new Sandwich(mainName, alsoKnownAs, placeOfOrigin, description, image, ingredients);
